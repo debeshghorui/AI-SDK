@@ -21,6 +21,8 @@ export type WireChatChunk = {
 export type ChatCallOptions = {
   signal?: AbortSignal;
   headers?: Record<string, string>;
+  timeoutMs?: number;
+  maxRetries?: number;
 };
 
 export interface Provider {

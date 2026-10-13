@@ -1,2 +1,5 @@
+export { createClient } from "./client.js";
+export type { ChatCompletion, Client } from "./client.js";
 export { SDKError } from "./errors.js";
 export type { SDKErrorCode } from "./errors.js";
+export type { Middleware, MiddlewareContext } from "./middleware.js";

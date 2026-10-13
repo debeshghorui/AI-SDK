@@ -9,7 +9,7 @@ Do not start a task until the plan is confirmed. `pnpm test` must pass with no n
 - [x] Task 3: Chat request schema
 - [x] Task 4: postChat, retries, timeouts, abort
 - [x] Task 5: Provider contract
-- [ ] Task 6: createClient chat completions
+- [x] Task 6: createClient chat completions
 - [ ] Task 7: Streaming collect
 - [ ] Task 8: Structured output
 - [ ] Task 9: Traces

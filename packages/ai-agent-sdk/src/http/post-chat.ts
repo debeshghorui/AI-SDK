@@ -12,6 +12,8 @@ export type PostChatTarget = {
 export type PostChatOptions = {
   signal?: AbortSignal;
   headers?: Record<string, string>;
+  timeoutMs?: number;
+  maxRetries?: number;
 };
 
 const DEFAULT_TIMEOUT_MS = 60_000;
@@ -30,7 +32,7 @@ export async function postChat(
   body: unknown,
   options: PostChatOptions = {},
 ): Promise<WireChatResponse> {
-  const maxRetries = target.maxRetries ?? DEFAULT_MAX_RETRIES;
+  const maxRetries = resolveMaxRetries(target, options);
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const result = await attemptOnce(target, body, options, attempt, maxRetries);
     if (result.kind === "fail") throw result.error;
@@ -56,7 +58,7 @@ export async function* postChatStream(
   body: unknown,
   options: PostChatOptions = {},
 ): AsyncGenerator<WireChatChunk> {
-  const maxRetries = target.maxRetries ?? DEFAULT_MAX_RETRIES;
+  const maxRetries = resolveMaxRetries(target, options);
   const startedAt = Date.now();
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const result = await attemptOnce(target, body, options, attempt, maxRetries);
@@ -110,7 +112,7 @@ async function fetchWithHeaderTimeout(
   body: unknown,
   options: PostChatOptions,
 ): Promise<Response> {
-  const timeoutMs = target.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const timeoutMs = options.timeoutMs ?? target.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const timeout = new AbortController();
   const timer = setTimeout(() => timeout.abort(), timeoutMs);
   const signals = [timeout.signal];
@@ -140,6 +142,10 @@ async function fetchWithHeaderTimeout(
   } finally {
     clearTimeout(timer);
   }
+}
+
+function resolveMaxRetries(target: PostChatTarget, options: PostChatOptions): number {
+  return options.maxRetries ?? target.maxRetries ?? DEFAULT_MAX_RETRIES;
 }
 
 function retryDelay(response: Response, attempt: number): number | null {

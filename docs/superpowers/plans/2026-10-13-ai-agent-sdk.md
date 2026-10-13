@@ -245,13 +245,13 @@ Each Bearer provider POSTs `/chat/completions`. Ollama with no key sends no `Aut
 - Consumes: `parseChatRequest`, `Provider`, `SDKError`
 - Produces: `createClient(options) -> Client` with `client.chat.completions.create`. Options schema is a strict object: `provider`, `memory?`, `traces?`, `middleware?`, `timeoutMs?` default `60_000`, `maxRetries?` default `2`. Unknown option keys are `invalid_request`. This task passes `memory: false` in tests so Ladybug is not opened. `traces` may be omitted; the buffer can be a no-op until Task 9, but `traceId` is already a string on the response. User middleware runs after the built-in slots, in array order, and sees the wire request. The wire body must not contain an unknown field rejected in Task 3.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 A fake `Provider` records the body. `create({ model, messages, threadId })` sends no `threadId`. `create({ ..., surprise: true })` throws `invalid_request` and the fake provider is not called. Two clients with `openai` and `groq` fakes accept the same `create` argument shape.
 
-- [ ] **Step 2: Run the test and confirm it fails**
-- [ ] **Step 3: Implement `createClient` for non-streaming chat**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run the test and confirm it fails**
+- [x] **Step 3: Implement `createClient` for non-streaming chat**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: add createClient chat completions`.
 
 ### Task 7: Streaming collect
