@@ -155,19 +155,19 @@ Only if the user asks. Message: `feat: add workspace and SDKError`.
   - `openai`, `groq`, `mistral`, `ollama`, `azureOpenAI` with the spec's default base URLs, env names, and Azure path ` {endpoint}/openai/deployments/{model}/chat/completions?api-version={apiVersion} `. Azure default `apiVersion` is `"2024-10-21"`. Azure auth header is `api-key`. The other four use `Authorization: Bearer {apiKey}` except Ollama, which omits `Authorization` when no key is set.
   - Factories do not call the network. They return a `Provider` whose `chat` / `chatStream` close over the resolved URL and headers and call `postChat` once Task 4 exists. Until Task 4, `chat` and `chatStream` throw `SDKError` `unsupported_runtime` with message `"postChat is not wired"`. That throw is replaced in Task 4.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Assert: `openai()` with `OPENAI_API_KEY` unset throws `missing_config` and the message does not contain a sample key. `openai({ apiKey: "" })` throws `missing_config` even when `OPENAI_API_KEY` is set. `openai({ apiKey: "sk-explicit", extra: true })` throws `invalid_request`. `ollama()` does not throw when no key is set. `azureOpenAI()` throws `missing_config` when endpoint or key is absent. `azureOpenAI({ endpoint: "https://example.openai.azure.com", apiKey: "k" })` returns `id === "azure-openai"`.
 
-- [ ] **Step 2: Run that test and confirm it fails**
+- [x] **Step 2: Run that test and confirm it fails**
 
 Run: `pnpm exec vitest run packages/ai-agent-sdk/test/providers.test.ts`
 
-- [ ] **Step 3: Implement the factories and exports**
+- [x] **Step 3: Implement the factories and exports**
 
 Subpath exports: `./openai`, `./groq`, `./mistral`, `./ollama`, `./azure-openai`. Root `src/index.ts` does not import them.
 
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 4: Run `pnpm test`**
 
 Expected: PASS.
 

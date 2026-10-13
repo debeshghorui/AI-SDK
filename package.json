@@ -6,6 +6,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
     "ai-agent-sdk": "workspace:*",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"

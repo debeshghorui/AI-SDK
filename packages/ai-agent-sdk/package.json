@@ -5,7 +5,12 @@
     "node": ">=20"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./openai": "./src/providers/openai.ts",
+    "./groq": "./src/providers/groq.ts",
+    "./mistral": "./src/providers/mistral.ts",
+    "./ollama": "./src/providers/ollama.ts",
+    "./azure-openai": "./src/providers/azure-openai.ts"
   },
   "dependencies": {
     "zod": "^4.0.0"

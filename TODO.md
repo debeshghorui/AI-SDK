@@ -5,7 +5,7 @@ One task per turn. Spec: `prd.md`. Plan: `docs/superpowers/plans/2026-10-13-ai-a
 Do not start a task until the plan is confirmed. `pnpm test` must pass with no network before a turn ends.
 
 - [x] Task 1: Workspace and SDKError
-- [ ] Task 2: Config merge and provider factories
+- [x] Task 2: Config merge and provider factories
 - [ ] Task 3: Chat request schema
 - [ ] Task 4: postChat, retries, timeouts, abort
 - [ ] Task 5: Provider contract
