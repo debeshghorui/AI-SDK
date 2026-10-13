@@ -282,13 +282,13 @@ A fake `Provider` records the body. `create({ model, messages, threadId })` send
 - Consumes: `parseChatRequest`
 - Produces: when `output` is set, the wire `response_format` is `{ type: "json_schema", json_schema: { name: "output", schema, strict: true } }` using `z.toJSONSchema(schema, { target: "draft-07" })`. `completion.output` is the parsed value. `message.content` stays the original string. Missing content, invalid JSON, or a Zod failure throws `invalid_output` with path and Zod code, and without the received value.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `output: z.strictObject({ answer: z.string() })` and content `'{"answer":"yes"}'` yields `output` `{ answer: "yes" }`. Content `not json` throws `invalid_output`. The message does not contain `not json`.
 
-- [ ] **Step 2: Run it and confirm it fails**
-- [ ] **Step 3: Implement the parse step**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run it and confirm it fails**
+- [x] **Step 3: Implement the parse step**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: parse structured chat output`.
 
 ### Task 9: Traces
@@ -302,13 +302,13 @@ A fake `Provider` records the body. `create({ model, messages, threadId })` send
 - Consumes: `createClient`
 - Produces: `client.traces.list(): readonly Span[]` and `clear()`. Last 200 spans, per client. Every `create` writes a span named `chat.completions` even on failure, plus `chat.completions.attempt`. Attributes only from the spec list. Never headers, keys, message text, tool arguments, or tool results. `traces: { content: true }` adds `messages` and `output`. `traces: false` writes nothing and does not export. If `trace.getTracer` has a real provider, emit the same spans. Do not call `NodeSDK`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 A success and a `provider_error` both appear in `list()`. The span JSON does not contain `sk-test` or `Hello` when the request used that key and that message. `traces: { content: true }` includes `Hello`. A password string `db-secret` passed only as a header is absent.
 
-- [ ] **Step 2: Run it and confirm it fails**
-- [ ] **Step 3: Implement the buffer and redaction**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run it and confirm it fails**
+- [x] **Step 3: Implement the buffer and redaction**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: record redacted traces`.
 
 ### Task 10: Memory window
