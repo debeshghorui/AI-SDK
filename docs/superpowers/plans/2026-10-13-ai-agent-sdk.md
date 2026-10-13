@@ -98,7 +98,7 @@ README.md                                   Task 17
 - Consumes: nothing
 - Produces: `SDKError`, `SDKErrorCode`. `new SDKError(code, message, extra?)`. `extra` keys are `provider?`, `status?`, `requestId?`, `traceId?`, `cause?`. `error.code` is the first argument. `error.name` is `"SDKError"`. `error.cause` is `extra.cause` when set.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -120,16 +120,16 @@ describe("SDKError", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `pnpm exec vitest run packages/ai-agent-sdk/test/errors.test.ts`
 Expected: FAIL because `ai-agent-sdk` is not defined yet.
 
-- [ ] **Step 3: Add the workspace and `SDKError`**
+- [x] **Step 3: Add the workspace and `SDKError`**
 
 Root `package.json` is private, `"type": "module"`, package manager `pnpm`, script `test` is `vitest run`. `pnpm-workspace.yaml` includes `packages/*`. `tsconfig.base.json` sets `strict`, `module` `NodeNext`, `moduleResolution` `NodeNext`, `target` `ES2022`. The package depends on `zod` `^4.0.0` and `typescript` and `vitest` as dev dependencies at the root. `packages/ai-agent-sdk` name is `ai-agent-sdk`, `"type": "module"`, `engines.node` `>=20`, export `"."` to `./src/index.ts`. `src/index.ts` exports `SDKError` and `SDKErrorCode` only.
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `pnpm test`
 Expected: PASS. No network.

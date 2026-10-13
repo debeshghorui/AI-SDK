@@ -1,6 +1,11 @@
 # Agent Skills
 .agents/skills/
 
+# Node
+node_modules/
+dist/
+.pnpm-store/
+
 # OS X
 .DS_Store
 

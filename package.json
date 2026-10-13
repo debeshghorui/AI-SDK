@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "ai-agent-sdk": "workspace:*",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
