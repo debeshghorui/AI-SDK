@@ -185,13 +185,13 @@ Expected: PASS.
 
 Fields are the spec table: `model`, `messages`, `temperature`, `top_p`, `max_tokens`, `stop`, `seed`, `user`, `tools`, `tool_choice`, `response_format`, `output`, `stream`, `threadId`, `signal`. `content` is `z.string()` only. `tool` messages require `tool_call_id`. `output` and `response_format` together are `invalid_request`. `output` and `stream: true` together are `invalid_request`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `parseChatRequest({ model: "m", messages: [{ role: "user", content: "Hi" }], n: 2 })` throws `invalid_request`. `content: ["text"]` throws `invalid_request` and the message contains `messages.0.content` and does not contain `text`. `stream: true` plus a Zod `output` throws `invalid_request`. A valid request's `wire` has no `threadId`.
 
-- [ ] **Step 2: Run the test and confirm it fails**
-- [ ] **Step 3: Implement `parseChatRequest`**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run the test and confirm it fails**
+- [x] **Step 3: Implement `parseChatRequest`**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: validate chat requests`.
 
 ### Task 4: postChat, retries, timeouts, abort
