@@ -1,0 +1,22 @@
+# Build turns
+
+One task per turn. Spec: `prd.md`. Plan: `docs/superpowers/plans/2026-10-13-ai-agent-sdk.md`.
+
+Do not start a task until the plan is confirmed. `pnpm test` must pass with no network before a turn ends.
+
+- [ ] Task 1: Workspace and SDKError
+- [ ] Task 2: Config merge and provider factories
+- [ ] Task 3: Chat request schema
+- [ ] Task 4: postChat, retries, timeouts, abort
+- [ ] Task 5: Provider contract
+- [ ] Task 6: createClient chat completions
+- [ ] Task 7: Streaming collect
+- [ ] Task 8: Structured output
+- [ ] Task 9: Traces
+- [ ] Task 10: Memory window
+- [ ] Task 11: Ladybug graph memory
+- [ ] Task 12: Neo4j and Memgraph adapters
+- [ ] Task 13: Agent loop
+- [ ] Task 14: Memory tools
+- [ ] Task 15: create-ai-agent-sdk
+- [ ] Task 16: README quickstart
