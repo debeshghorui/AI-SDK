@@ -1,0 +1,15 @@
+# Agent Skills
+.agents/skills/
+
+# OS X
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Obsidian
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+

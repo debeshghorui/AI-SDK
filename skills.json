@@ -1,0 +1,79 @@
+{
+  "agents": [
+    "cursor"
+  ],
+  "skills": {
+    "brainstorming": {
+      "repo": "https://github.com/obra/superpowers",
+      "description": "Refine a design before any code is written"
+    },
+    "code-review": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Review a diff before it lands"
+    },
+    "code-review-and-quality": {
+      "repo": "https://github.com/addyosmani/agent-skills",
+      "description": "Multi-axis review of a diff or pull request"
+    },
+    "codebase-design": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Design how a codebase should be structured"
+    },
+    "diagnosing-bugs": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Find the cause of a bug before changing code"
+    },
+    "domain-modeling": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Model the domain before writing the schema"
+    },
+    "find-skills": {
+      "repo": "https://github.com/vercel-labs/skills",
+      "description": "Find and install other agent skills"
+    },
+    "grill-me": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Interview a plan until the decisions are solid"
+    },
+    "handoff": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Hand the next session enough context to continue"
+    },
+    "improve-codebase-architecture": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Find and fix structural problems"
+    },
+    "prototype": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Build a small prototype before committing"
+    },
+    "security-and-hardening": {
+      "repo": "https://github.com/addyosmani/agent-skills",
+      "description": "Harden input, auth, and dependencies"
+    },
+    "security-audit": {
+      "repo": "https://github.com/cloudflare/security-audit-skill",
+      "description": "Multi-phase security audit with verified findings"
+    },
+    "systematic-debugging": {
+      "repo": "https://github.com/obra/superpowers",
+      "description": "Four-phase root-cause debugging"
+    },
+    "teach": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Explain a topic and check that it landed"
+    },
+    "triage": {
+      "repo": "https://github.com/mattpocock/skills",
+      "description": "Sort bugs and tasks by what to do next"
+    },
+    "verification-before-completion": {
+      "repo": "https://github.com/obra/superpowers",
+      "description": "Prove a fix works before calling it done"
+    },
+    "writing-plans": {
+      "repo": "https://github.com/obra/superpowers",
+      "description": "Turn an approved design into an implementation plan"
+    }
+  }
+}

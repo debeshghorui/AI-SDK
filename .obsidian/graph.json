@@ -1,0 +1,12 @@
+{
+  "colorGroups": [
+    {
+      "query": "path:wiki/people",
+      "color": { "a": 1, "rgb": 16744576 }
+    },
+    {
+      "query": "path:wiki/knowledge-bases",
+      "color": { "a": 1, "rgb": 3707764 }
+    }
+  ]
+}

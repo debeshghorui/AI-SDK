@@ -1,0 +1,12 @@
+---
+description: Operate this repo as an LLM wiki — ingest sources, answer from wiki pages, and lint the vault.
+alwaysApply: true
+---
+
+This repository is an LLM wiki. `AGENTS.md` is the schema. Follow it on every turn that adds a source, asks what the vault knows, or checks wiki health.
+
+- `raw/` is immutable. Read it; never edit or delete a source file.
+- `wiki/` is yours to write: articles, `wiki/index.md`, and append-only `wiki/log.md`.
+- Ingest writes the source, compiles or updates articles, then updates the index and log.
+- Query reads `wiki/index.md` first, answers from wiki pages, and cites them. Write a page only when the user asks to file the answer.
+- Lint runs `python3 scripts/wiki.py lint`, applies the deterministic fixes that command reports, and records the pass in `wiki/log.md`.
