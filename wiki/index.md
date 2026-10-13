@@ -19,3 +19,18 @@ Named people with a page of their own.
 | Article | Summary | Updated |
 |---------|---------|---------|
 | [Andrej Karpathy](people/andrej-karpathy.md) | Author of the LLM Wiki gist; prefers one-source ingests beside Obsidian. | 2026-10-13 |
+
+## ai-agent-sdk
+
+The TypeScript SDK: one OpenAI-shaped client, swappable providers, graph memory, traces, and a tool loop.
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [AI Agent SDK](ai-agent-sdk/product.md) | One chat client, five OpenAI-compatible providers, graph memory, traces, and a tool loop in a single package. | 2026-10-13 |
+| [Providers](ai-agent-sdk/providers.md) | OpenAI, Groq, Mistral, Ollama, and Azure OpenAI share one contract and differ by URL, key, and Azure's path. | 2026-10-13 |
+| [Chat Contract](ai-agent-sdk/chat-contract.md) | `chat.completions.create` is a strict OpenAI subset plus `threadId`, `signal`, and `output`. | 2026-10-13 |
+| [Graph Memory](ai-agent-sdk/graph-memory.md) | Ladybug is the on-disk default; Neo4j and Memgraph plug in through the same Memory interface. | 2026-10-13 |
+| [Traces](ai-agent-sdk/traces.md) | Every call records an in-process span; secrets and message text stay out unless content is opted in. | 2026-10-13 |
+| [Agent Loop](ai-agent-sdk/agent-loop.md) | `tool`, `Agent`, and `run` loop on non-streaming chat until the model answers or a step cap is hit. | 2026-10-13 |
+| [Structured Output](ai-agent-sdk/structured-output.md) | A Zod schema becomes JSON Schema on the wire, then the SDK parses the returned string. | 2026-10-13 |
+| [Create CLI](ai-agent-sdk/create-cli.md) | `create-ai-agent-sdk` writes one Node TypeScript app and does not stay running. | 2026-10-13 |

@@ -7,7 +7,7 @@ Do not start a task until the plan is confirmed. `pnpm test` must pass with no n
 - [x] Task 1: Workspace and SDKError
 - [x] Task 2: Config merge and provider factories
 - [x] Task 3: Chat request schema
-- [ ] Task 4: postChat, retries, timeouts, abort
+- [x] Task 4: postChat, retries, timeouts, abort
 - [ ] Task 5: Provider contract
 - [ ] Task 6: createClient chat completions
 - [ ] Task 7: Streaming collect

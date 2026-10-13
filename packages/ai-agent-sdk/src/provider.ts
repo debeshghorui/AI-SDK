@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { parseStrict, pickPresent, readConfig } from "./config.js";
 import { SDKError } from "./errors.js";
+import { postChat, postChatStream } from "./http/post-chat.js";
 
 export type ProviderId = "openai" | "groq" | "mistral" | "ollama" | "azure-openai";
 
@@ -64,21 +65,23 @@ type ChatTarget = {
   fetch?: typeof fetch;
 };
 
-function notWired(): never {
-  throw new SDKError("unsupported_runtime", "postChat is not wired");
-}
-
 export function createProvider(id: ProviderId, target: ChatTarget): Provider {
   return {
     id,
-    chat(request) {
-      target.resolveUrl(request);
-      return notWired();
+    chat(request, options) {
+      return postChat(bindTarget(target, request), request, options);
     },
-    chatStream(request) {
-      target.resolveUrl(request);
-      return notWired();
+    chatStream(request, options) {
+      return postChatStream(bindTarget(target, request), { ...request, stream: true }, options);
     },
+  };
+}
+
+function bindTarget(target: ChatTarget, request: WireChatRequest) {
+  return {
+    url: target.resolveUrl(request),
+    headers: target.headers,
+    fetch: target.fetch,
   };
 }
 

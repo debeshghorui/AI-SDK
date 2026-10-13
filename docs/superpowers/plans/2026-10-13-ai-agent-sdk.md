@@ -206,13 +206,13 @@ Fields are the spec table: `model`, `messages`, `temperature`, `top_p`, `max_tok
 - Consumes: `Provider` headers and URL from Task 2, `SDKError`
 - Produces: `postChat(target, body, options) -> Promise<WireChatResponse>` and `postChatStream(...) -> AsyncIterable<WireChatChunk>`. `target` is `{ url, headers, fetch?, timeoutMs?, maxRetries? }`. Defaults: `timeoutMs` 60_000, `maxRetries` 2. Backoff 200ms then 800ms, plus jitter in `[0, 100]`. `Retry-After` under 10 seconds replaces that delay for 429 and 503. A larger `Retry-After` returns the error. Retry network errors, 408, 409, 429, 500–599, only before the first stream chunk. Abort is `aborted` and is not retried. Header timeout and idle timeout (60s between chunks, 10 minute overall stream cap) are `timeout`. Non-2xx JSON of the OpenAI error shape becomes `provider_error` with `status` and `error.message`. The raw body is `cause` only.
 
-- [ ] **Step 1: Write the failing tests** against `node:http`
+- [x] **Step 1: Write the failing tests** against `node:http`
 
 429 then 200 succeeds and the test observes two requests. A stream that writes one SSE chunk and then 500 does not open a second request. `Retry-After: 30` on 429 does not wait 30s (assert elapsed < 2s with fake timers or a deadline). An error JSON body `{ error: { message: "nope" } }` becomes `provider_error`, and the `SDKError` message does not contain the `Authorization` header the test sent (`Bearer sk-test`).
 
-- [ ] **Step 2: Run the test and confirm it fails**
-- [ ] **Step 3: Implement `postChat` and point the five factories at it**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run the test and confirm it fails**
+- [x] **Step 3: Implement `postChat` and point the five factories at it**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: add chat HTTP helper`.
 
 ### Task 5: Provider contract

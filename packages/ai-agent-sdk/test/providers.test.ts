@@ -99,18 +99,19 @@ describe("provider factories", () => {
     }
   });
 
-  it("returns an azure-openai provider when endpoint and key are set", () => {
+  it("returns an azure-openai provider when endpoint and key are set", async () => {
     const provider = azureOpenAI({
       endpoint: "https://example.openai.azure.com",
       apiKey: "k",
+      fetch: async () =>
+        new Response(JSON.stringify({ id: "chatcmpl-test" }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
     });
     expect(provider.id).toBe("azure-openai");
-    expect(() => provider.chat({ model: "gpt-4o-mini" }, {})).toThrow(SDKError);
-    try {
-      provider.chat({ model: "gpt-4o-mini" }, {});
-    } catch (error) {
-      expect((error as SDKError).code).toBe("unsupported_runtime");
-      expect((error as SDKError).message).toBe("postChat is not wired");
-    }
+    await expect(provider.chat({ model: "gpt-4o-mini" }, {})).resolves.toMatchObject({
+      id: "chatcmpl-test",
+    });
   });
 });
