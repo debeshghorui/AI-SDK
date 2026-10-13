@@ -1,4 +1,5 @@
 packages:
   - "packages/*"
 allowBuilds:
+  "@ladybugdb/core": true
   esbuild: true

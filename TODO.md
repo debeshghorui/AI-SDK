@@ -13,8 +13,8 @@ Do not start a task until the plan is confirmed. `pnpm test` must pass with no n
 - [x] Task 7: Streaming collect
 - [x] Task 8: Structured output
 - [x] Task 9: Traces
-- [ ] Task 10: Memory window
-- [ ] Task 11: Ladybug graph memory
+- [x] Task 10: Memory window
+- [x] Task 11: Ladybug graph memory
 - [ ] Task 12: Neo4j and Memgraph adapters
 - [ ] Task 13: Agent loop
 - [ ] Task 14: Memory tools

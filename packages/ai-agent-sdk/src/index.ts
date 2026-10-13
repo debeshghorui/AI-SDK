@@ -1,4 +1,6 @@
 export { collectStream } from "./chat/collect.js";
+export { createGraphMemory } from "./memory/graph.js";
+export type { Memory } from "./memory/types.js";
 export type { ChatCompletionChunk } from "./chat/types.js";
 export { createClient } from "./client.js";
 export type { ChatCompletion, Client } from "./client.js";

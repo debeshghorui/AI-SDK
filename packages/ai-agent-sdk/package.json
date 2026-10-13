@@ -13,6 +13,7 @@
     "./azure-openai": "./src/providers/azure-openai.ts"
   },
   "dependencies": {
+    "@ladybugdb/core": "^0.21.2",
     "@opentelemetry/api": "^1.9.1",
     "zod": "^4.0.0"
   }

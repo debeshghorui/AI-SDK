@@ -1,8 +1,12 @@
 import { z } from "zod";
+import { collectStream } from "./chat/collect.js";
 import { parseChatRequest } from "./chat/schema.js";
-import type { ChatCompletionChunk, ParsedChatRequest } from "./chat/types.js";
+import type { ChatCompletionChunk, ChatMessage, ParsedChatRequest, ToolCall } from "./chat/types.js";
 import { parseStrict } from "./config.js";
 import { SDKError } from "./errors.js";
+import type { Memory } from "./memory/types.js";
+import { createGraphMemory } from "./memory/graph.js";
+import { selectMessages } from "./memory/window.js";
 import type { Middleware } from "./middleware.js";
 import { runMiddleware } from "./middleware.js";
 import { outputResponseFormat, parseStructuredOutput } from "./output.js";
@@ -11,6 +15,7 @@ import { attachTraceSession, createTraceSession, type Span, type SpanAttributes 
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_MAX_MESSAGES = 50;
 
 const passthrough: Middleware = async (_context, next) => next();
 
@@ -68,6 +73,7 @@ export function createClient(options: unknown): Client {
   const tracesEnabled = parsed.traces !== false;
   const traceContent = typeof parsed.traces === "object" && parsed.traces.content === true;
   const session = createTraceSession({ enabled: tracesEnabled, content: traceContent });
+  const memory = resolveMemory(parsed.memory);
 
   function create(input: { stream: true }): AsyncIterable<ChatCompletionChunk>;
   function create(input: unknown): Promise<ChatCompletion>;
@@ -93,9 +99,11 @@ export function createClient(options: unknown): Client {
       request.wire.response_format = outputResponseFormat(request.output);
     }
 
-    if (request.wire.stream === true) return streamChunks(provider, request, call, traceId, session, traceContent);
+    if (request.wire.stream === true) {
+      return streamChunks(provider, request, call, traceId, session, traceContent, memory);
+    }
 
-    return completeChat(provider, request, call, traceId, userMiddleware, session, traceContent);
+    return completeChat(provider, request, call, traceId, userMiddleware, session, traceContent, memory);
   }
 
   const client: Client = {
@@ -118,7 +126,9 @@ async function completeChat(
   userMiddleware: readonly Middleware[],
   session: ReturnType<typeof createTraceSession>,
   traceContent: boolean,
+  memory: Memory | false,
 ): Promise<ChatCompletion> {
+  const originalMessages = request.wire.messages;
   const shared = sharedAttributes(provider.id, request);
   const parent = session.start({ traceId, name: "chat.completions", attributes: shared });
   const attempt = session.start({
@@ -128,17 +138,19 @@ async function completeChat(
     attributes: { ...shared, attempt: 1 },
   });
   let outputText: string | undefined;
+  let sent = request;
 
   try {
+    sent = await applyMemory(memory, request);
     const response = await runMiddleware(
       [passthrough, passthrough, ...userMiddleware],
       {
         operation: "chat",
         providerId: provider.id,
-        ...(request.threadId !== undefined ? { threadId: request.threadId } : {}),
-        request: request.wire,
+        ...(sent.threadId !== undefined ? { threadId: sent.threadId } : {}),
+        request: sent.wire,
       },
-      () => provider.chat(request.wire, call),
+      () => provider.chat(sent.wire, call),
     );
     const usage = usageAttributes(response);
     attempt.end({ status: "ok", attributes: usage });
@@ -147,9 +159,10 @@ async function completeChat(
     if (request.output !== undefined) {
       completion.output = parseStructuredOutput(assistantContent(response), request.output);
     }
+    await persistTurn(memory, request.threadId, originalMessages, response);
     parent.end({
       status: "ok",
-      attributes: { ...usage, ...textAttributes(request, outputText, traceContent) },
+      attributes: { ...usage, ...textAttributes(sent, outputText, traceContent) },
     });
     return completion;
   } catch (error) {
@@ -161,7 +174,7 @@ async function completeChat(
       parent.end({
         status: "error",
         errorCode: info.errorCode,
-        attributes: { ...info.attributes, ...textAttributes(request, outputText, traceContent) },
+        attributes: { ...info.attributes, ...textAttributes(sent, outputText, traceContent) },
       });
     }
     throw error;
@@ -175,7 +188,9 @@ async function* streamChunks(
   traceId: string,
   session: ReturnType<typeof createTraceSession>,
   traceContent: boolean,
+  memory: Memory | false,
 ): AsyncGenerator<ChatCompletionChunk> {
+  const originalMessages = request.wire.messages;
   const shared = sharedAttributes(provider.id, request);
   const parent = session.start({ traceId, name: "chat.completions", attributes: shared });
   const attempt = session.start({
@@ -187,13 +202,22 @@ async function* streamChunks(
   let outputText = "";
   let usage: SpanAttributes = {};
   let failure: unknown;
+  let sent = request;
+  const chunks: ChatCompletionChunk[] = [];
 
   try {
-    for await (const chunk of provider.chatStream(request.wire, call)) {
+    sent = await applyMemory(memory, request);
+    for await (const chunk of provider.chatStream(sent.wire, call)) {
       if (traceContent) outputText += deltaText(chunk as ChatCompletionChunk);
       const nextUsage = usageAttributes(chunk as WireChatResponse);
       if (Object.keys(nextUsage).length > 0) usage = nextUsage;
-      yield { ...(chunk as ChatCompletionChunk), traceId };
+      const next = { ...(chunk as ChatCompletionChunk), traceId };
+      chunks.push(next);
+      yield next;
+    }
+    if (memory !== false && request.threadId !== undefined) {
+      const completion = await collectStream(chunks);
+      await persistTurn(memory, request.threadId, originalMessages, completion);
     }
   } catch (error) {
     failure = error;
@@ -216,11 +240,63 @@ async function* streamChunks(
         attributes: {
           ...usage,
           ...info?.attributes,
-          ...textAttributes(request, traceContent ? outputText : undefined, traceContent),
+          ...textAttributes(sent, traceContent ? outputText : undefined, traceContent),
         },
       });
     }
   }
+}
+
+function resolveMemory(memory: false | object | undefined): Memory | false {
+  if (memory === false) return false;
+  if (memory !== undefined) return memory as Memory;
+  return createGraphMemory();
+}
+
+function readMaxMessages(memory: Memory): number {
+  const value = (memory as { maxMessages?: unknown }).maxMessages;
+  return typeof value === "number" && Number.isFinite(value) ? value : DEFAULT_MAX_MESSAGES;
+}
+
+async function applyMemory(memory: Memory | false, request: ParsedChatRequest): Promise<ParsedChatRequest> {
+  if (memory === false || request.threadId === undefined) return request;
+  const stored = await memory.load(request.threadId);
+  const selected = selectMessages(stored, readMaxMessages(memory));
+  return {
+    ...request,
+    wire: {
+      ...request.wire,
+      messages: [...selected, ...request.wire.messages],
+    },
+  };
+}
+
+async function persistTurn(
+  memory: Memory | false,
+  threadId: string | undefined,
+  messages: readonly ChatMessage[],
+  response: WireChatResponse,
+): Promise<void> {
+  if (memory === false || threadId === undefined) return;
+  const assistant = assistantChatMessage(response);
+  await memory.append(threadId, assistant === undefined ? [...messages] : [...messages, assistant]);
+}
+
+function assistantChatMessage(response: WireChatResponse): ChatMessage | undefined {
+  const choices = response.choices;
+  if (!Array.isArray(choices)) return undefined;
+  const first = choices[0];
+  if (typeof first !== "object" || first === null) return undefined;
+  const message = (first as { message?: unknown }).message;
+  if (typeof message !== "object" || message === null) return undefined;
+  const record = message as { content?: unknown; tool_calls?: unknown };
+  const toolCalls = Array.isArray(record.tool_calls) ? (record.tool_calls as ToolCall[]) : undefined;
+  const content = typeof record.content === "string" ? record.content : "";
+  if (toolCalls !== undefined && toolCalls.length > 0) {
+    return { role: "assistant", content, tool_calls: toolCalls };
+  }
+  if (typeof record.content !== "string") return undefined;
+  return { role: "assistant", content };
 }
 
 function sharedAttributes(providerId: string, request: ParsedChatRequest): SpanAttributes {

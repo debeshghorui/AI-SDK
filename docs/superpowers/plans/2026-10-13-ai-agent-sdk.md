@@ -321,12 +321,12 @@ A success and a `provider_error` both appear in `list()`. The span JSON does not
 - Consumes: `ChatMessage`
 - Produces: `Memory` as in the spec. `selectMessages(stored, maxMessages): ChatMessage[]` keeps up to 20 system messages, oldest first, then the newest non-system messages until the sent list length is `maxMessages`. Rows that do not fit stay out of the returned array. The request's own messages are not an input to this function.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 30 stored messages, 5 of them system, `maxMessages` 10. The result has the system messages that fit the rule and length 10.
-- [ ] **Step 2: Run it and confirm it fails**
-- [ ] **Step 3: Implement `selectMessages`**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run it and confirm it fails**
+- [x] **Step 3: Implement `selectMessages`**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: select the memory window`.
 
 ### Task 11: Ladybug graph memory
@@ -340,16 +340,16 @@ A success and a `provider_error` both appear in `list()`. The span JSON does not
 - Consumes: `Memory`, `selectMessages`, `SDKError`
 - Produces: `createGraphMemory({ path?, maxMessages? })`. Default path `.ai-agent-sdk/memory.lbdb`, default `maxMessages` 50. One connection, one queue. Schema from the spec (`Thread`, `Message`, `Entity`, `HAS_MESSAGE`, `RELATION`). `remember` is idempotent for the same subject, predicate, object, and thread id. `search` lowercases the query, contains-match, order `createdAt` descending, max limit 50. `createClient()` with `memory` omitted calls `createGraphMemory()`. If the addon fails to load, `createClient` throws `unsupported_runtime` unless `memory: false` or a custom `Memory` was passed. Tests use `os.tmpdir()`, never the default path.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append and load round-trip. A second `createGraphMemory` on the same file returns the first turn. `remember({ subject: "ada", predicate: "likes", object: "graphs" })` then a new connection `search("graphs", 10)` returns that triple. A failed chat (fake provider throws) leaves the thread empty.
 
-- [ ] **Step 2: Run it and confirm it fails**
-- [ ] **Step 3: Implement the store and the client load/append path**
+- [x] **Step 2: Run it and confirm it fails**
+- [x] **Step 3: Implement the store and the client load/append path**
 
 On `threadId`: load, `selectMessages`, send selected plus the new request messages, append request messages and the assistant message only after success. `seq` starts at 1.
 
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: store threads in Ladybug`.
 
 ### Task 12: Neo4j and Memgraph adapters
