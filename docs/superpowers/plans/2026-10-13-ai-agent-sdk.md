@@ -225,13 +225,13 @@ Fields are the spec table: `model`, `messages`, `temperature`, `top_p`, `max_tok
 - Consumes: the five factories and `postChat`
 - Produces: one contract file. `openai`, `groq`, `mistral`, and `ollama` hit the same mock with `Authorization: Bearer`. Azure hits `{endpoint}/openai/deployments/{model}/chat/completions?api-version=2024-10-21` with header `api-key` and no `Authorization`.
 
-- [ ] **Step 1: Write the contract**
+- [x] **Step 1: Write the contract**
 
 Each Bearer provider POSTs `/chat/completions`. Ollama with no key sends no `Authorization`. A successful body returns `choices[0].message.content`. `stream: true` yields a content delta. The request body the mock records has no `threadId`.
 
-- [ ] **Step 2: Run it and confirm it fails only if a provider is wrong**
-- [ ] **Step 3: Fix the provider that fails**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 2: Run it and confirm it fails only if a provider is wrong**
+- [x] **Step 3: Fix the provider that fails**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `test: share the provider contract`.
 
 ### Task 6: createClient chat completions
