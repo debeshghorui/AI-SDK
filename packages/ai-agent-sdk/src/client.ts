@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parseChatRequest } from "./chat/schema.js";
+import type { ChatCompletionChunk, ParsedChatRequest } from "./chat/types.js";
 import { parseStrict } from "./config.js";
 import type { Middleware } from "./middleware.js";
 import { runMiddleware } from "./middleware.js";
@@ -44,6 +45,7 @@ export type ChatCompletion = WireChatResponse & {
 export type Client = {
   chat: {
     completions: {
+      create(input: { stream: true }): AsyncIterable<ChatCompletionChunk>;
       create(input: unknown): Promise<ChatCompletion>;
     };
   };
@@ -56,29 +58,50 @@ export function createClient(options: unknown): Client {
   const userMiddleware = parsed.middleware ?? [];
   const provider = parsed.provider;
 
+  function create(input: { stream: true }): AsyncIterable<ChatCompletionChunk>;
+  function create(input: unknown): Promise<ChatCompletion>;
+  function create(input: unknown): Promise<ChatCompletion> | AsyncIterable<ChatCompletionChunk> {
+    let request: ParsedChatRequest;
+    try {
+      request = parseChatRequest(input);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    const traceId = crypto.randomUUID();
+    const call: ChatCallOptions = { timeoutMs, maxRetries };
+    if (request.signal !== undefined) call.signal = request.signal;
+
+    if (request.wire.stream === true) return streamChunks(provider, request, call, traceId);
+
+    return runMiddleware(
+      [passthrough, passthrough, ...userMiddleware],
+      {
+        operation: "chat",
+        providerId: provider.id,
+        ...(request.threadId !== undefined ? { threadId: request.threadId } : {}),
+        request: request.wire,
+      },
+      () => provider.chat(request.wire, call),
+    ).then((response) => ({ ...response, traceId }));
+  }
+
   return {
     chat: {
       completions: {
-        async create(input: unknown): Promise<ChatCompletion> {
-          const request = parseChatRequest(input);
-          const traceId = crypto.randomUUID();
-          const call: ChatCallOptions = { timeoutMs, maxRetries };
-          if (request.signal !== undefined) call.signal = request.signal;
-
-          const response = await runMiddleware(
-            [passthrough, passthrough, ...userMiddleware],
-            {
-              operation: "chat",
-              providerId: provider.id,
-              ...(request.threadId !== undefined ? { threadId: request.threadId } : {}),
-              request: request.wire,
-            },
-            () => provider.chat(request.wire, call),
-          );
-
-          return { ...response, traceId };
-        },
+        create,
       },
     },
   };
+}
+
+async function* streamChunks(
+  provider: Provider,
+  request: ParsedChatRequest,
+  call: ChatCallOptions,
+  traceId: string,
+): AsyncGenerator<ChatCompletionChunk> {
+  for await (const chunk of provider.chatStream(request.wire, call)) {
+    yield { ...(chunk as ChatCompletionChunk), traceId };
+  }
 }

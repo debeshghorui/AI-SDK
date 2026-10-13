@@ -1,3 +1,5 @@
+export { collectStream } from "./chat/collect.js";
+export type { ChatCompletionChunk } from "./chat/types.js";
 export { createClient } from "./client.js";
 export type { ChatCompletion, Client } from "./client.js";
 export { SDKError } from "./errors.js";

@@ -71,3 +71,35 @@ export type ParsedChatRequest = {
   signal?: AbortSignal;
   output?: ZodType;
 };
+
+export type ChatToolCallDelta = {
+  index?: number;
+  id?: string;
+  type?: "function";
+  function?: {
+    name?: string;
+    arguments?: string;
+  };
+};
+
+export type ChatCompletionChunk = {
+  id?: string;
+  object?: string;
+  created?: number;
+  model?: string;
+  choices?: Array<{
+    index?: number;
+    delta?: {
+      role?: string;
+      content?: string | null;
+      tool_calls?: ChatToolCallDelta[];
+    };
+    finish_reason?: string | null;
+  }>;
+  usage?: {
+    prompt_tokens?: number;
+    completion_tokens?: number;
+    total_tokens?: number;
+  };
+  traceId?: string;
+};

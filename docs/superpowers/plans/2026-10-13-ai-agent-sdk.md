@@ -265,10 +265,10 @@ A fake `Provider` records the body. `create({ model, messages, threadId })` send
 - Consumes: `ChatCompletionChunk`
 - Produces: `collectStream(stream) -> Promise<ChatCompletion>`. Concatenate `delta.content`. Assemble `delta.tool_calls` by index into `message.tool_calls`. Copy `id`, `model`, `usage`, and `traceId` from the last chunk that has them, or from a final chunk. Aborting the request signal cancels the read.
 
-- [ ] **Step 1: Write the failing test** with three chunks: content `"Hel"` `"lo"`, then a finish chunk. Expect `message.content === "Hello"`. A second test assembles two tool-call argument fragments.
-- [ ] **Step 2: Run it and confirm it fails**
-- [ ] **Step 3: Implement `collectStream` and `stream: true` on the client**
-- [ ] **Step 4: Run `pnpm test`**
+- [x] **Step 1: Write the failing test** with three chunks: content `"Hel"` `"lo"`, then a finish chunk. Expect `message.content === "Hello"`. A second test assembles two tool-call argument fragments.
+- [x] **Step 2: Run it and confirm it fails**
+- [x] **Step 3: Implement `collectStream` and `stream: true` on the client**
+- [x] **Step 4: Run `pnpm test`**
 - [ ] **Step 5: Commit** only if asked. Message: `feat: collect chat streams`.
 
 ### Task 8: Structured output
